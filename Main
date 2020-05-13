@@ -1,0 +1,269 @@
+import java.util.Scanner;
+import java.text.NumberFormat;
+import java.io.FileNotFoundException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+public class M13_Real_World{
+  public static void main(String[] args) {
+    Scanner input = new Scanner(System.in);
+    //First, I declare the variables that I will be using
+    int userChoice = 0;
+    //This while loop keeps the program going until the user chooses to exit.
+    while(userChoice != 3)
+    {
+      //First, I ask the user for their choice
+      System.out.println("Please select your choice: ");
+      System.out.println("1: Manually enter new patient payment transaction.");
+      System.out.println("2: Read patient transactions from file.");
+      System.out.println("3: Exit.");
+      userChoice = input.nextInt();
+      if (userChoice == 1){
+        //After getting all the data, I print out the information in a format.
+        String userAnswer = hospitalEntry();
+        System.out.println("                                              XYZ Community Hospital");
+        System.out.println("======================================================================================================================");
+        System.out.println("Name                            Address                           Payment Information");
+        System.out.println("Last   First      Address Line 1   City State Zip              Amount Owed  Payment Amt.   Payment Date:");
+        System.out.println("======================================================================================================================");
+        System.out.println(userAnswer);
+      }
+
+      if (userChoice == 2){
+        try{
+          //First, I ask the user where they want the infomration outputted to
+          System.out.println("Do you want to output the report to the (S) screen , (F) to a file , or (B) both");
+          String choice = input.next();
+          //Screen
+          if (choice.equals("S") || choice.equals("s")){
+            System.out.println("Please enter the name of the file to read from:");
+            File fileName = new File(input.next());
+            fileEntry(fileName);
+          }
+          //File
+          if (choice.equals("F") || choice.equals("f")){
+            System.out.println("Please enter the name of the file to write to:");
+            File writeFile = new File(input.next());
+            System.out.println("Please enter the name of the file to read from:");
+            File fileName = new File(input.next());
+              fileToFileEntry(writeFile, fileName);
+          }
+          //Both
+          if (choice.equals("B") || choice.equals("b")){
+
+            System.out.println("Please enter the name of the file to write to:");
+            File writeFile = new File(input.next());
+            System.out.println("Please enter the name of the file to read from:");
+            File fileName = new File(input.next());
+              FileWriter fw = new FileWriter(writeFile);
+              //First, I write the file to the file.
+              fileToFileEntry(writeFile, fileName);
+              //Second, I write the file to the screen
+              fileEntry(fileName);
+          }
+      if (userChoice == 3){
+      System.exit(1);
+        }
+      }
+      catch(IOException IOE){
+      System.out.println("The file could not be found");
+      }
+    }
+  }
+}
+//The below comment is just so that I can copy and paste the file name.
+//XYZHospitalExampleData-1.txt
+
+  //This is the method that allows the user to manually enter patient information
+  public static String hospitalEntry() {
+    String userReturn = "Null";
+    try{
+    //First, I initialize the scanner and the number formatter that I will use.
+    Scanner input = new Scanner(System.in);
+    NumberFormat formatter = NumberFormat.getCurrencyInstance();
+    //Next, I ask the user for the patient's first and last names.
+    System.out.println("Please enter the patient's first name: ");
+    String firstName = input.next();
+    //This if statement checks to make sure that the name does not contain numbers or special characters.
+    if (isAlphanumeric(firstName)  == false)
+    {
+      System.out.println("Please be mindful to enter only characters. ");
+      System.exit(1);
+    }
+    System.out.println("Please enter the patient's last name: ");
+    String lastName =  input.next();
+    //This if statement checks to make sure that the name does not contain numbers or special characters.
+    if (isAlphanumeric(lastName)  == false)
+    {
+      System.out.println("Please be mindful to enter only characters. ");
+      System.exit(1);
+    }
+    //Next, I ask the user for the patient's full address.
+    System.out.println("Please enter the number of the patient's address: ");
+    String addressPartOne = input.next();
+    System.out.println("Please enter the patient's street address: Example: Hawk_Lane");
+    String addressPartTwo = input.next();
+
+    //Next, the city and state.
+    System.out.println("Please enter the city that the patient lives in: ");
+    String userCity = input.next();
+    //This if statement checks to make sure that the name does not contain numbers or special characters.
+    if (isAlphanumeric(userCity)  == false)
+    {
+      System.out.println("Please be mindful to enter only characters. ");
+      System.exit(1);
+    }
+    System.out.println("Please enter the state that the patient lives in: ");
+    String userState = input.next();
+    //This if statement checks to make sure that the name does not contain numbers or special characters.
+    if (isAlphanumeric(userState)  == false)
+    {
+      System.out.println("Please be mindful to enter only characters. ");
+      System.exit(1);
+    }
+    //Next, the zip code.
+    System.out.println("Please enter the patient's zip code: ");
+    String userZip = input.next();
+    //This while statment checks to make sure that the user enters the proper number of digits for the zip code.
+    while (userZip.length() != 5){
+      System.out.println("Please enter five digits for the zip code: ");
+      userZip = input.next();
+    }
+    System.out.println("Please enter the + 4 digits of the patient's zip code: ");
+    String userZipPlusFour = input.next();
+    //This while statment checks to make sure that the user enters the proper number of digits for the zip code.
+    while (userZipPlusFour.length() != 4){
+      System.out.println("Please enter four digits for the zip code: ");
+      userZipPlusFour = input.next();
+    }
+    //Next, I get the patient's monetary committments.
+    System.out.println("Please enter the amount of money that the patient owes: ");
+    String userBalance = input.next();
+    System.out.println("Please enter the the patient's payment amount: ");
+    String userPayment = input.next();
+    System.out.println("Please enter the patient's pay by date: Example: 01/01/20 ");
+    String paymentDeadline = input.next();
+    userReturn = lastName + " " + firstName + "   " + addressPartOne + " " + addressPartTwo + " " + userCity + ", " + userState + " " + userZip + "-" + userZipPlusFour + "    $" + userBalance + "     $" + userPayment + "       " + paymentDeadline;
+    }
+    catch (NumberFormatException e){
+      System.out.println("Please be mindful of your entries.");
+    }
+    return userReturn;
+  }
+
+  //This method is used to check to make sure that the enteries are characters only.
+    public static boolean isAlphanumeric(String str)
+    {
+      char[] charArray = str.toCharArray();
+      for(char c:charArray)
+      {
+          if (!Character.isLetter(c))
+              return false;
+            }
+        return true;
+    }
+//This method allows the user to enter patient information from a file.
+public static void fileEntry(File fileName){
+    String ID = " ";
+    String Last_Name = " ";
+    String First_Name = " ";
+    String add_line_1 = " ";
+    String add_line_2 = " ";
+    String City = " ";
+    String State = " ";
+    String Zip = " ";
+    String Zip_Plus_4 = " ";
+    String Payment_Date = " ";
+    String Payment_Amount = " ";
+    String Amount_Owed = " ";
+    int counter = 0;
+    String userReturn = " ";
+  try{
+      Scanner reader = new Scanner(fileName);
+      //Then I print out the title card
+      System.out.println("                                              XYZ Community Hospital");
+      System.out.println("======================================================================================================================");
+      System.out.println("Name                            Address                           Payment Information");
+      System.out.println("Last   First      Address Line 1   City State Zip              Amount Owed  Payment Amt.   Payment Date:");
+      System.out.println("======================================================================================================================");
+      //This while loop iterates through the file and
+      while (reader.hasNextLine()) {
+        String str = reader.nextLine();
+        //Here I split the string, using escape characters for the ^
+        String[] data = str.split("\\^", 100);
+          for (String a : data){
+            ID = data[0];
+            Last_Name =  data[1];
+            First_Name =  data[2];
+            add_line_1 =  data[3];
+            add_line_2 =  data[4];
+            City =  data[5]; 
+            State =  data[6];
+            Zip =  data[7];
+            Zip_Plus_4 =  data[8];
+            Payment_Date =  data[9];
+            Payment_Amount =  data[10];
+            Amount_Owed =  data[11];
+        }
+        userReturn = Last_Name + " " + First_Name + "   " + add_line_1 + " " + add_line_2 + " " + City + ", " + State + " " + Zip + "-" + Zip_Plus_4 + "    $" + Amount_Owed + "     $" + Payment_Amount + "       " + Payment_Date;
+        System.out.println(userReturn);
+      }
+    }
+    catch(IOException IOE){
+    System.out.println("The file could not be found");
+    }
+  }
+  //This method prints the information from a file to another file.
+  public static void fileToFileEntry(File writeFile, File fileName){
+      String ID = " ";
+      String Last_Name = " ";
+      String First_Name = " ";
+      String add_line_1 = " ";
+      String add_line_2 = " ";
+      String City = " ";
+      String State = " ";
+      String Zip = " ";
+      String Zip_Plus_4 = " ";
+      String Payment_Date = " ";
+      String Payment_Amount = " ";
+      String Amount_Owed = " ";
+      int counter = 0;
+      String userReturn = " ";
+    try{
+        Scanner reader = new Scanner(fileName);
+        FileWriter fw = new FileWriter(writeFile);
+        //First, I write the title card to the file.
+        fw.write("                                                 XYZ Community Hospital\n");
+        fw.write("======================================================================================================================\n");
+        fw.write("Name                            Address                           Payment Information\n");
+        fw.write("Last   First      Address Line 1   City State Zip              Amount Owed  Payment Amt.   Payment Date:\n");
+        fw.write("======================================================================================================================\n");
+        //This while loop iterates through the file and
+        while (reader.hasNextLine()) {
+          String str = reader.nextLine();
+          //Here I split the string, using escape characters for the ^
+          String[] data = str.split("\\^", 100);
+            for (String a : data){
+              ID = data[0];
+              Last_Name =  data[1];
+              First_Name =  data[2];
+              add_line_1 =  data[3];
+              add_line_2 =  data[4];
+              City =  data[5];
+              State =  data[6];
+              Zip =  data[7];
+              Zip_Plus_4 =  data[8];
+              Payment_Date =  data[9];
+              Payment_Amount =  data[10];
+              Amount_Owed =  data[11];
+        }
+        userReturn = Last_Name + " " + First_Name + "   " + add_line_1 + " " + add_line_2 + " " + City + ", " + State + " " + Zip + "-" + Zip_Plus_4 + "    $" + Amount_Owed + "     $" + Payment_Amount + "       " + Payment_Date;
+        fw.write(userReturn + "\n");
+      }
+      System.out.println("The information has been written to: " + writeFile);
+        fw.close();
+    }
+    catch(IOException IOE){
+    System.out.println("IO Exception Caught");
+    }
+  }
+}
